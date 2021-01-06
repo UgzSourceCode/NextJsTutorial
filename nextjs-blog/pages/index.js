@@ -1,9 +1,9 @@
 import Head from 'next/head'
 import Layout, { siteTitle } from '../components/layout'
 import utilStyles from '../styles/utils.module.css'
-import * as matter from 'gray-matter';
+import { getSortedPostsData } from '../lib/posts'
 
-export default function Home(props) {
+export default function Home({ allPostsData }) {
   return (
     <Layout home>
       <Head>
@@ -15,37 +15,30 @@ export default function Home(props) {
           (This is a sample website - you’ll be building a site like this on{' '}
           <a href="https://nextjs.org/learn">our Next.js tutorial</a>.)
         </p>
-        {props.collect.map((item) => (
-          <div>
-            <p>{item.id} - {item.date} - {item.date}</p>
-            <p>{item.content}</p>
-          </div>
-        ))}
+      </section>
+      <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
+        <h2 className={utilStyles.headingLg}>Blog</h2>
+        <ul className={utilStyles.list}>
+          {allPostsData.map(({ id, date, title }) => (
+            <li className={utilStyles.listItem} key={id}>
+              {title}
+              <br />
+              {id}
+              <br />
+              {date}
+            </li>
+          ))}
+        </ul>
       </section>
     </Layout>
   )
 }
 
 export async function getStaticProps() {
-  const pre = matter.read("./posts/pre-rendering.md");
-  const ssd = matter.read("./posts/ssg-ssr.md");
-  
+  const allPostsData = getSortedPostsData()
   return {
     props: {
-      collect: [
-        {
-          id: 1,
-          title: pre.data.title,
-          date: pre.data.date,
-          content: pre.content,
-        },
-        {
-          id: 2,
-          title: ssd.data.title,
-          date: ssd.data.date,
-          content: ssd.content,
-        },
-      ]
+      allPostsData
     }
   }
 }
